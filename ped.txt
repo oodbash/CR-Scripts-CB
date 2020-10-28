@@ -1,5 +1,3 @@
-proba
-
 oodba domain
 
 Create temporary PED EA/DA admin accounts (breakglass account)
