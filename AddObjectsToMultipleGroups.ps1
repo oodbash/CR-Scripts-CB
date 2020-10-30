@@ -53,7 +53,7 @@ PROCESS {
 
     foreach($Object in $Objects){
         try{
-            Add-ADGroupMember $Object.Group -Members $Object.Object -ErrorAction Stop -Verbose
+            Add-ADGroupMember $Object.Group -Members $Object.User -ErrorAction Stop -Verbose
         }
         catch{
         }
@@ -67,7 +67,7 @@ PROCESS {
 		#write-host ("Grupa")		
 		#$grp            
         $validUsers = $Group.group.object | Get-ADUser -ErrorAction Ignore
-		$validComputers = $Group.group.object | Get-ADComputer  -ErrorAction Ignore
+		$validComputers = $Group.group.user | Get-ADComputer  -ErrorAction Ignore
 		#write-host ("Validi")
 		#$validUsers
 		#$validComputers
