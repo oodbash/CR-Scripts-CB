@@ -36,59 +36,23 @@ param(
 
 Import-Module ActiveDirectory
 
-#$Date = Get-Date -Format MM.dd.yyyy
+Add-Type -AssemblyName 'System.Web'
 
-#Get the Domain list
-#$DomainList = (Get-ADForest).Domains
-
-#Identify FSMO Owner
-#$FSMORoleForest = Get-ADForest | Select-Object DomainNamingMaster,SchemaMaster
-
-#GetForest Properties
-#$ForestDomainName = (Get-ADForest).Name
-#$ForestMode = (Get-ADForest).ForestMode
-
-$passwordlenght = 24
-
-
+$length = 10
+$nonAlphaChars = 1
 
 
 $item = New-Object PSObject
 
-#Perfrom Action for every domain
-# foreach ($Domain in $DomainList) 
-#    {
-
     $myarray = @()
-    
-    #GetDomain Properties
-    #$DomainName = (Get-ADDomain -Identity $Domain).Name 
-    #$DomainMode = (Get-ADDomain -Identity $Domain).DomainMode
-    #$DomainSID = (Get-ADDomain -Identity $Domain).DomainSID
+
     $Domain = get-addomain
     $DomainDNS = $Domain.DNSRoot
         
-    #Identify FSMO Owner
-    #$FSMORoleDomain = Get-ADDomain -Identity $Domain | Select-Object DNSRoot,PDCEmulator,RidMaster,InfrastructureMaster
-    
-    #Get all account disable
-    # $inputFile = Read-Host "Type Filename containing users from $Domain domain with full path (eg. c:\temp\myfile.csv) or if you want to skip this tomain enter SKIP)"
-    #if ($inputFile -eq "skip" -or $inputFile -eq "Skip" -or $inputFile -eq "SKIP") {continue}
-    #$allAccount = Import-Csv $inputFile
-   
-    $DisableAcc = Read-Host "Do you want also to disable these account? (answer with y or n)"
-
-    <#
-    switch ($DisableAcc) {
-        'y' {$Enabled = $false}
-        'n' {$Enabled = $true}
-    }
-    #>
-
+    # $DisableAcc = Read-Host "Do you want also to disable these account? (answer with y or n)"
 
     $allAccount = Import-Csv $CSV
 
-    #$allAccount = Search-ADAccount -AccountDisabled -UsersOnly
     foreach ($account in $allAccount)
         {
 
@@ -100,17 +64,11 @@ $item = New-Object PSObject
             else
             {
 
+                $randomPWD = [System.Web.Security.Membership]::GeneratePassword($length, $nonAlphaChars)
                 
-                $Chars = [Char[]]"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!#$%/()=?[]{}"
-                $randomPWD = ($Chars | Get-Random -Count $passwordlenght) -join ""
-                
-                $SecPaswd= ConvertTo-SecureString –String $randomPWD –AsPlainText –Force
+                $SecPaswd = ConvertTo-SecureString –String $randomPWD –AsPlainText –Force
 
                 Set-ADAccountPassword -Reset -NewPassword $SecPaswd –Identity $accountidentity -server $DomainDNS
-
-                $randomPWD = ($Chars | Get-Random -Count $passwordlenght) -join ""
-                
-                $SecPaswd= ConvertTo-SecureString –String $randomPWD –AsPlainText –Force
 
                 $item = New-Object PSObject
                 if ($ShowPass) {
@@ -123,9 +81,11 @@ $item = New-Object PSObject
 
                 Set-ADAccountPassword -Reset -NewPassword $SecPaswd –Identity $accountidentity -server $DomainDNS
 
+                <#
                 if ($DisableAcc -eq "y") {
                     Set-ADUser -identity $accountidentity.distinguishedname -server $DomainDNS -Enabled:$False
                 }
+                #>
 
                 $myarray += $item
             }
