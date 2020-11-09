@@ -71,13 +71,16 @@ $item = New-Object PSObject
                 Set-ADAccountPassword -Reset -NewPassword $SecPaswd –Identity $accountidentity -server $DomainDNS
 
                 $item = New-Object PSObject
+
+                #$item | Add-Member -type NoteProperty -Name 'AccountName' -Value $accountidentity.name
+
+                $item | Add-Member -type NoteProperty -Name 'SamAccountName' -Value $accountidentity.SamAccountName
+                $item | Add-Member -type NoteProperty -Name 'UserPrincipalName' -Value $accountidentity.UserPrincipalName
+                $item | Add-Member -type NoteProperty -Name 'DistinguishedName' -Value $accountidentity.DistinguishedName
+                #$item | Add-Member -type NoteProperty -Name 'Status' -Value $accountidentity.Enabled
                 if ($ShowPass) {
                     $item | Add-Member -type NoteProperty -Name 'Password' -Value $randomPWD
                 }
-                $item | Add-Member -type NoteProperty -Name 'AccountName' -Value $accountidentity.name
-                $item | Add-Member -type NoteProperty -Name 'DistinguishedName' -Value $accountidentity.DistinguishedName
-                $item | Add-Member -type NoteProperty -Name 'SamAccountName' -Value $accountidentity.SamAccountName
-                $item | Add-Member -type NoteProperty -Name 'Status' -Value $accountidentity.Enabled
 
                 Set-ADAccountPassword -Reset -NewPassword $SecPaswd –Identity $accountidentity -server $DomainDNS
 
