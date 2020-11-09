@@ -36,6 +36,14 @@ sl C:\PED\SCRIPTS\BulkCreateUsers\
 
 .\BulkADUserCreationToSpecificOU.ps1 -csv C:\PED\CSVs\oodba_new_admins_to_be_created.csv
 
+Copy-Item C:\PED\SCRIPTS\BulkCreateUsers\new_accounts.csv C:\ped\CSVs\oodba_recreated_admins.csv
+
+(Optional) Create brand new accounts
+
+sl C:\PED\SCRIPTS\BulkCreateUsers\
+
+.\BulkADUserCreationToSpecificOU.ps1 -csv C:\PED\CSVs\oodba_brand_new_admins.csv
+
 Copy-Item C:\PED\SCRIPTS\BulkCreateUsers\new_accounts.csv C:\ped\CSVs\oodba_new_admins.csv
 
 Configure Tier 0 admins as "account sensitive and can't be delegated"
