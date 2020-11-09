@@ -53,7 +53,7 @@ PROCESS {
 
     foreach($Object in $Objects){
         try{
-            Add-ADGroupMember $Object.Group -Members $Object.User -ErrorAction Stop -Verbose
+            Add-ADGroupMember $Object.Group -Members $Object.User -ErrorAction Stop # -Verbose
         }
         catch{
         }
