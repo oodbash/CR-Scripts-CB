@@ -1,18 +1,18 @@
 oodba domain
 
-Create temporary PED EA/DA admin accounts (breakglass account)
+Create temporary PED EA/DA admin accounts
 
-sl C:\PED\SCRIPTS\BulkCreateUsers\
+sl C:\PED\SCRIPTS\
 
 .\BulkADUserCreationToSpecificOU.ps1 -csv C:\PED\CSVs\oodba_temp_admins_to_be_created.csv
 
-Copy-Item C:\PED\SCRIPTS\BulkCreateUsers\new_accounts.csv C:\ped\CSVs\oodba_temp_admins.csv
+Copy-Item C:\PED\SCRIPTS\new_accounts.csv C:\ped\CSVs\oodba_temp_admins.csv
 
 Grant EA/DA admin rights to temporary admin accounts
 
-sl C:\PED\SCRIPTS\AddObjectsToGroups\
+sl C:\PED\SCRIPTS\
 
-.\add_objects_to_multiple_groups.ps1 -CSV C:\PED\CSVs\oodba_temp_admins_grp_membership.csv
+.\addobjectstomultiplegroups.ps1 -CSV C:\PED\CSVs\oodba_temp_admins_grp_membership.csv
 
 DISABLE all other EA/DA/Tier0 admin user accounts (to be replaced by new Tier 0 accounts later)
 
