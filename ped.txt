@@ -56,7 +56,7 @@ Grant EA/DA admin rights to permanent admin accounts
 
 sl C:\PED\SCRIPTS\
 
-.\add_objects_to_multiple_groups.ps1 -CSV C:\PED\CSVs\oodba_new_admins_grp_membership.csv
+.\addobjectstomultiplegroups.ps1 -CSV C:\PED\CSVs\oodba_new_admins_grp_membership.csv
 
 Reset password on all Tier 0 service accounts
 
