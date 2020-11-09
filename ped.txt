@@ -74,7 +74,7 @@ Remove all temporary accounts and permissions
 
 sl C:\PED\SCRIPTS\
 
-.\delete_users.ps1 -csv C:\PED\CSVs\oodba_temp_admins.csv
+.\deleteusers.ps1 -csv C:\PED\CSVs\oodba_temp_admins.csv
 
 Verify Forest/Domain Trusts reset
 
