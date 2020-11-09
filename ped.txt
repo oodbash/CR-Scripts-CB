@@ -14,55 +14,57 @@ sl C:\PED\SCRIPTS\
 
 .\addobjectstomultiplegroups.ps1 -CSV C:\PED\CSVs\oodba_temp_admins_grp_membership.csv
 
-DISABLE all other EA/DA/Tier0 admin user accounts (to be replaced by new Tier 0 accounts later)
+DISABLE old EA/DA/Tier0 admin user accounts (to be replaced by new Tier 0 accounts later)
 
 import-csv C:\PED\CSVs\oodba_will_be_permanently_disabled.csv | %{set-aduser $_.samaccountname -Enabled:$false -SmartcardLogonRequired:$true}
 
 import-csv C:\PED\CSVs\oodba_will_be_recreated.csv | %{set-aduser $_.samaccountname -Enabled:$false -SmartcardLogonRequired:$true}
 
-DISABLE all accounts for which will have passwprd reset later (coordinated with service account owners)
+DISABLE all accounts which will have passwprd reset later (coordinated with service account owners)
 
 import-csv C:\PED\CSVs\oodba_disable_before_reset_pass.csv | %{set-aduser $_.name -Enabled:$false}
 
 Restart All DCs according to Reboot plan (start with PDC)
 
-sl C:\PED\SCRIPTS\RemoteServerRestart\
+sl C:\PED\SCRIPTS\
 
 .\RemoteServerRestart.ps1 -CSV C:\PED\CSVs\oodba_reboot_plan.csv
 
 Create and issue new Tier 0 admin accounts & passwords to administrators
 
-sl C:\PED\SCRIPTS\BulkCreateUsers\
+sl C:\PED\SCRIPTS\
 
 .\BulkADUserCreationToSpecificOU.ps1 -csv C:\PED\CSVs\oodba_new_admins_to_be_created.csv
 
-Copy-Item C:\PED\SCRIPTS\BulkCreateUsers\new_accounts.csv C:\ped\CSVs\oodba_recreated_admins.csv
+Copy-Item C:\PED\SCRIPTS\new_accounts.csv C:\ped\CSVs\oodba_recreated_admins.csv
 
 (Optional) Create brand new accounts
 
-sl C:\PED\SCRIPTS\BulkCreateUsers\
+sl C:\PED\SCRIPTS\
 
 .\BulkADUserCreationToSpecificOU.ps1 -csv C:\PED\CSVs\oodba_brand_new_admins.csv
 
-Copy-Item C:\PED\SCRIPTS\BulkCreateUsers\new_accounts.csv C:\ped\CSVs\oodba_new_admins.csv
+Copy-Item C:\PED\SCRIPTS\new_accounts.csv C:\ped\CSVs\oodba_new_admins.csv
 
 Configure Tier 0 admins as "account sensitive and can't be delegated"
 
 import-csv C:\ped\CSVs\oodba_new_admins.csv | %{set-aduser $_.name -AccountNotDelegated:$true}
 
+import-csv C:\ped\CSVs\oodba_recreated_admins.csv | %{set-aduser $_.name -AccountNotDelegated:$true}
+
 Grant EA/DA admin rights to permanent admin accounts
 
-sl C:\PED\SCRIPTS\AddObjectsToGroups\
+sl C:\PED\SCRIPTS\
 
 .\add_objects_to_multiple_groups.ps1 -CSV C:\PED\CSVs\oodba_new_admins_grp_membership.csv
 
 Reset password on all Tier 0 service accounts
 
-sl C:\PED\SCRIPTS\ResetPasswordsFromFile\
+sl C:\PED\SCRIPTS\
 
 .\ResetPasswordsFromFile.ps1 -csv c:\ped\CSVs\oodba_reset_pass.csv -showpass
 
-Copy-Item C:\PED\SCRIPTS\ResetPasswordsFromFile\New_Passwords.csv C:\ped\CSVs\oodba_new_passwords.csv
+Copy-Item C:\PED\SCRIPTS\New_Passwords.csv C:\ped\CSVs\oodba_new_passwords.csv
 
 Enable Tier 0 service accounts
 
@@ -70,13 +72,13 @@ import-csv C:\PED\CSVs\oodba_disable_before_reset_pass.csv | %{set-aduser $_.nam
 
 Remove all temporary accounts and permissions
 
-sl C:\PED\SCRIPTS\DeleteUsers\
+sl C:\PED\SCRIPTS\
 
 .\delete_users.ps1 -csv C:\PED\CSVs\oodba_temp_admins.csv
 
 Verify Forest/Domain Trusts reset
 
-sl C:\PED\SCRIPTS\VerifyTrusts\
+sl C:\PED\SCRIPTS\
 
 .\VerifyTrusts.ps1
 
