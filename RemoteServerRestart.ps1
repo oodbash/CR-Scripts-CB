@@ -28,12 +28,13 @@
 
 param(
     [Parameter(Mandatory=$True, Helpmessage="Specify full path to CSV (i.e c:\temp\members.csv")][string]$CSV,
-    [Parameter(Mandatory=$False, Helpmessage="Specify update goup name")][string]$UG
+    [Parameter(Mandatory=$False, Helpmessage="Specify update goup name")][string]$UG,
+    [Parameter(Mandatory=$False, Helpmessage="Ping test only..")][switch]$Test
     )
 
-$creds = get-credential
+# $creds = get-credential
 
-$serverGrp = Import-Csv $CSV | Group-Object -Property Sequence | sort -Property Name
+$serverGrp = Import-Csv $CSV | Group-Object -Property Sequence | Sort-Object -Property Name
 
 if ($UG) {
     $serverGrp = $serverGrp | where-object { $_.name -eq $UG}
@@ -45,26 +46,34 @@ $hostname = $env:computername
 
 $DomainDNS = (Get-ADDomain -Identity $Domain).DNSRoot
 
-$script:outputfile = "$DomainDNS-reset.txt"
+$script:outputfile = "$DomainDNS-reboot-report.txt"
 
-Clear-Content -Path $outputfile
+if (test-path "\.$DomainDNS-reboot-report.txt") {
+    Clear-Content -Path $outputfile
+}
 
-$serverGrp | foreach {
+$serverGrp | ForEach-Object {
     $phase = $PSItem.Name
     Write-Verbose "Working on phase $phase, $($PSItem.Count) items"
     Add-Content -Value "Working on phase $phase" -Path $outputfile
     Write-Host "Phase $phase" -ForegroundColor Yellow
-    foreach ($server in (($PSItem.Group).CI))
-    {
-        if ($Server -notlike $hostname) {
-            write-Host "Starting reboot for $server"
-            Add-Content -Value "Restarting server $server" -Path $outputfile
-            Restart-Computer $Server -Credential $creds -Force
-        } else {
-            write-Host "Starting reboot for $server.. You maybe think you do, but you really don't want to reboot local server :)"
+
+    if (!$test) {
+        foreach ($server in (($PSItem.Group).CI))
+        {
+            if ($Server -notlike $hostname) {
+                write-Host "Restarting server $server"
+                Add-Content -Value "Restarting server $server" -Path $outputfile
+                Restart-Computer $Server -WsmanAuthentication Kerberos -Force
+            } else {
+                write-Host "Starting reboot for $server.. You maybe think you do, but you really don't want to reboot local server :)"
+            }
         }
+        
+        Write-Host "Let's wait for 15 seconds before we proceed.."
+        Start-Sleep -Seconds 15
+        Write-Host "OK, let's see what happened.."
     }
-    Start-Sleep -Seconds 5
 
     $c = "r"
     
@@ -72,19 +81,18 @@ $serverGrp | foreach {
         foreach ($Server in (($PSItem.Group).CI))
         {
             # Test-Connection $Server
-	        if (Test-Connection $Server -quiet) {
-                $lastbootuptime = (Get-CimInstance -ComputerName $Server -ClassName win32_operatingsystem -ErrorAction ignore | select lastbootuptime).lastbootuptime
-                write-host "Computer $Server verified to be responding to ping at $(Get-Date), and last bootup time is $lastbootuptime"
-                "Computer $Server verified to be responding to ping at $(Get-Date), and last bootup tmime is $lastbootuptime" | Add-Content -Path $outputfile 
+	        if (Test-Connection $Server -quiet -Count 2 -Delay 1) {
+                $lastbootuptime = (Get-CimInstance -ComputerName $Server -ClassName win32_operatingsystem -ErrorAction ignore | Select-Object lastbootuptime).lastbootuptime
+                "Computer $Server verified to be responding to ping at $(Get-Date), and last bootup time is $lastbootuptime" | Tee-Object -FilePath $outputfile -Append
+                # "Computer $Server verified to be responding to ping at $(Get-Date), and last bootup tmime is $lastbootuptime" | Add-Content -Path $outputfile 
             }
 	        else {
-                write-host "Computer $Server unresponsive to ping at $(Get-Date)"
-                "Computer $Server unresponsive to ping at $(Get-Date)" | Add-Content -Path $outputfile 
+                write-host "Computer $Server is unresponsive to ping at $(Get-Date)"
+                "Computer $Server is unresponsive to ping at $(Get-Date)" | Add-Content -Path $outputfile 
             }
         }
+
         $c = Read-Host "If you want to redo test, enter (r)"
     }
-    
-    #$c = Read-Host "Would you like to continue with next Update Group?"
-    #if ($c -like "y") {} else {break}
+
 }
