@@ -24,6 +24,18 @@ DISABLE all accounts which will have passwprd reset later (coordinated with serv
 
 import-csv C:\PED\CSVs\oodba_disable_before_reset_pass.csv | %{set-aduser $_.name -Enabled:$false}
 
+Execute First reset in all domains (mode 3)
+
+sl C:\PED\SCRIPTS\
+
+.\New-CtmADKrbtgtKeys.ps1
+
+Execute Second reset in all domains (mode 3)
+
+sl C:\PED\SCRIPTS\
+
+.\New-CtmADKrbtgtKeys.ps1
+
 Restart All DCs according to Reboot plan (start with PDC)
 
 sl C:\PED\SCRIPTS\
