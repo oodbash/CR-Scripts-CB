@@ -20,10 +20,6 @@ import-csv C:\PED\CSVs\oodba_will_be_permanently_disabled.csv | %{set-aduser $_.
 
 import-csv C:\PED\CSVs\oodba_will_be_recreated.csv | %{set-aduser $_.samaccountname -Enabled:$false -SmartcardLogonRequired:$true}
 
-DISABLE all accounts which will have passwprd reset later (coordinated with service account owners)
-
-import-csv C:\PED\CSVs\oodba_disable_before_reset_pass.csv | %{set-aduser $_.name -Enabled:$false}
-
 Restart All DCs according to Reboot plan (start with PDC)
 
 sl C:\PED\SCRIPTS\
@@ -38,7 +34,7 @@ sl C:\PED\SCRIPTS\
 
 Copy-Item C:\PED\SCRIPTS\new_accounts.csv C:\ped\CSVs\oodba_recreated_admins.csv
 
-(Optional) Create brand new accounts
+Create brand new accounts
 
 sl C:\PED\SCRIPTS\
 
@@ -57,18 +53,6 @@ Grant EA/DA admin rights to permanent admin accounts
 sl C:\PED\SCRIPTS\
 
 .\addobjectstomultiplegroups.ps1 -CSV C:\PED\CSVs\oodba_new_admins_grp_membership.csv
-
-Reset password on all Tier 0 service accounts
-
-sl C:\PED\SCRIPTS\
-
-.\ResetPasswordsFromFile.ps1 -csv c:\ped\CSVs\oodba_reset_pass.csv -showpass
-
-Copy-Item C:\PED\SCRIPTS\New_Passwords.csv C:\ped\CSVs\oodba_new_passwords.csv
-
-Enable Tier 0 service accounts
-
-import-csv C:\PED\CSVs\oodba_disable_before_reset_pass.csv | %{set-aduser $_.name -Enabled:$true}
 
 Remove all temporary accounts and permissions
 
