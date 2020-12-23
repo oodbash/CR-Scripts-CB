@@ -48,7 +48,7 @@ PROCESS {
     Write-Host "This script will delete these accounts:"
     
     foreach($Object in $Objects){
-        try {Get-ADUser -Identity $Object.DistinguishedName | select DistinguishedName}
+        try {Get-ADUser -Identity $Object.DistinguishedName | Select-Object DistinguishedName}
         catch {}
     }
 
