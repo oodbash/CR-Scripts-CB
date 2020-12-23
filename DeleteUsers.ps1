@@ -48,16 +48,16 @@ PROCESS {
     Write-Host "This script will delete these accounts:"
     
     foreach($Object in $Objects){
-        try {Get-ADUser -Identity $Object.DistinguishedName | fl -Property SamAccountName,DistinguishedName}
+        try {Get-ADUser -Identity $Object.DistinguishedName | select DistinguishedName}
         catch {}
     }
 
-    $proceed = Read-Host "Do you want to continue (Y/N):"
+    $proceed = Read-Host "Do you want to continue (Y/N)"
 
     if ($proceed -eq "Y" -or $proceed -eq "y" -or $proceed -eq "Yes" -or $proceed -eq "yes")  {
         foreach($Object in $Objects){
         try{
-            Get-ADUser -Identity $Object.samaccountName | remove-aduser -confirm:$False
+            Get-ADUser -Identity $Object.DistinguishedName | remove-aduser -confirm:$False
             Write-Host "Deleting " $Object.samaccountName
         }
         catch{
