@@ -24,7 +24,7 @@ DISABLE old EA/DA/Tier0 admin user accounts (to be replaced by new Tier 0 accoun
 
 DISABLE all accounts which will have password reset later (coordinated with service account owners)
 
-import-csv C:\PED\CSVs\oodba_disable_before_reset_pass.csv | %{set-aduser $_.name -Enabled:$false}
+import-csv C:\PED\CSVs\oodba_reset_pass.csv | %{set-aduser $_.name -Enabled:$false}
 
 Execute First reset in all domains (mode 3)
 
@@ -50,7 +50,7 @@ sl C:\PED\SCRIPTS\
 
 .\CreateUsers.ps1 -csv C:\PED\CSVs\oodba_new_admins_to_be_created.csv
 
-Copy-Item C:\PED\SCRIPTS\new_accounts.csv C:\ped\CSVs\oodba_recreated_admins.csv
+Copy-Item C:\PED\SCRIPTS\new_accounts.csv C:\ped\CSVs\oodba_new_admins.csv
 
 (Optional) Create brand new accounts
 
@@ -64,7 +64,7 @@ Configure Tier 0 admins as "account sensitive and can't be delegated"
 
 import-csv C:\ped\CSVs\oodba_brand_new_admins.csv | %{set-aduser $_.samaccountname -AccountNotDelegated:$true}
 
-import-csv C:\ped\CSVs\oodba_recreated_admins.csv | %{set-aduser $_.samaccountname -AccountNotDelegated:$true}
+import-csv C:\ped\CSVs\oodba_new_admins.csv | %{set-aduser $_.samaccountname -AccountNotDelegated:$true}
 
 Grant EA/DA admin rights to permanent admin accounts
 
