@@ -107,6 +107,14 @@ PROCESS {
         foreach ($account in $AccountList) {
             $User = Get-ADUser -identity $account.samaccountname
             $NewSAM = $change + $User.SamAccountName
+
+            If ($User.SamAccountName.Length -gt '11') {
+                $NewSAM = $change + $User.SamAccountName.Substring(0, 11)
+            }
+            Else {
+                $NewSAM = $change + $User.SamAccountName
+            }
+
             $UPNSuffix = ($User.UserPrincipalName -split "@")[1]
             $NewUPN = $NewSam + '@' + $UPNSuffix
             $NewName = $change + $User.Name

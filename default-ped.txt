@@ -16,11 +16,13 @@ sl C:\PED\SCRIPTS\
 
 DISABLE old EA/DA/Tier0 admin user accounts (to be replaced by new Tier 0 accounts later)
 
-import-csv C:\PED\CSVs\oodba_will_be_permanently_disabled.csv | %{set-aduser $_.samaccountname -Enabled:$false -SmartcardLogonRequired:$true}
+.\DisableUsers.ps1 -csv C:\ped\oodba_will_be_permanently_disabled.csv
 
-import-csv C:\PED\CSVs\oodba_will_be_recreated.csv | %{set-aduser $_.samaccountname -Enabled:$false -SmartcardLogonRequired:$true}
+.\DisableUsers.ps1 -csv C:\ped\oodba_will_be_renamed.csv
 
-DISABLE all accounts which will have passwprd reset later (coordinated with service account owners)
+.\DisableUsers.ps1 -csv C:\ped\oodba_will_be_recreated.csv -rename
+
+DISABLE all accounts which will have password reset later (coordinated with service account owners)
 
 import-csv C:\PED\CSVs\oodba_disable_before_reset_pass.csv | %{set-aduser $_.name -Enabled:$false}
 
