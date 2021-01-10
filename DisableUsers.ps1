@@ -60,7 +60,7 @@ BEGIN{
     break
     }
     try {
-    $Objects = Import-CSV $CSV
+    $AccountList = Import-Csv -Path $CSV
     }
     catch {
     Write-Warning "The CSV file was not found"
@@ -75,10 +75,10 @@ PROCESS {
         New-ADOrganizationalUnit -Name "Disabled Accounts" -Path $ddn
     }
 
-    # Import CSV 
-    $AccountList = Import-Csv -Path $CSV
     # Specify target OU.This is where users will be moved.
     $TargetOU =  "OU=Disabled Accounts,$ddn"
+
+    # Specify rename pattern.
     $change = "old-"
 
     if ($deprivilege) {
@@ -107,6 +107,14 @@ PROCESS {
         foreach ($account in $AccountList) {
             $User = Get-ADUser -identity $account.samaccountname
             $NewSAM = $change + $User.SamAccountName
+
+            If ($User.SamAccountName.Length -gt '11') {
+                $NewSAM = $change + $User.SamAccountName.Substring(0, 11)
+            }
+            Else {
+                $NewSAM = $change + $User.SamAccountName
+            }
+
             $UPNSuffix = ($User.UserPrincipalName -split "@")[1]
             $NewUPN = $NewSam + '@' + $UPNSuffix
             $NewName = $change + $User.Name

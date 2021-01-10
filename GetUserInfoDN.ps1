@@ -1,3 +1,22 @@
+    <#
+    .SYNOPSIS
+    Query users defined in CSV file from AD. Idea is to verify Tier 0 users DNs. Results will be used to generate CSVs for PED. This script also returns users group membership in separate CSV.
+    .DESCRIPTION
+    Author: Vladimir Mutić
+    Version 2.0
+
+    This script will take list of users from the CSV return users parameters and group membership from AD.
+    .PARAMETER CSV (MANDATORY)
+    Specify the full source to the CSV file i.e c:\temp\members.csv
+    CSV need to have DN column defined
+    .EXAMPLE
+    .\GetUserInfoDN.ps1 -CSV c:\temp\members.csv
+
+    .DISCLAIMER
+    All scripts and other powershell references are offered AS IS with no warranty.
+    These script and functions are tested in my environment and it is recommended that you test these scripts in a test environment before using in your production environment.
+    #>
+
 [CmdletBinding()]
 
 param(
@@ -65,7 +84,9 @@ PROCESS {
             }
 
 		}
-        catch {}
+        catch {
+            Write-Host "I was not able to find user" $Object.DN
+        }
     }
 
     $users_array | Export-CSV "Tier0_Accs_$DomainDNSName.csv" -NoTypeInformation -Encoding UTF8
