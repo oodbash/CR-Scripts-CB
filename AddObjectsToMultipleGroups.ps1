@@ -11,11 +11,11 @@
     Specify the full source to the CSV file i.e c:\temp\members.csv
     CSV file need to have GROUP and OBJECT column. Computer accounts need to have $ at the end.
     .EXAMPLE
-    .\add_objects_to_multiple_groups.ps1 -CSV c:\temp\members.csv
+    .\AddObjectsToMultipleGroups.ps1 -CSV c:\temp\members.csv
     .PARAMETER CLEAN (OpTIONAL)
     If you specify parameter CLEAN (Switch parameter), script will clean up group so only users stated in CSV file will remain as members.
     .EXAMPLE
-    .\add_objects_to_multiple_groups.ps1 -CSV c:\temp\members.csv -clean
+    .\AddObjectsToMultipleGroups.ps1 -CSV c:\temp\members.csv -clean
 
     .DISCLAIMER
     All scripts and other powershell references are offered AS IS with no warranty.
