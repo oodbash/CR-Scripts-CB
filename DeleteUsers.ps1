@@ -48,8 +48,7 @@ PROCESS {
     Write-Host "This script will delete these accounts:"
     
     foreach($Object in $Objects){
-        try {Get-ADUser -Identity $Object.DistinguishedName | Select-Object DistinguishedName}
-        catch {}
+        Get-ADUser -Identity $Object.DistinguishedName | Format-Table -HideTableHeaders -Property DistinguishedName
     }
 
     $proceed = Read-Host "Do you want to continue (Y/N)"
