@@ -1,0 +1,12 @@
+For each domain, you need to run GetUserInfoDN.ps1 script against proper CSV file. 
+
+For example: 
+
+.\GetUserInfoDN.ps1 -csv c:\temp\domainDNSname.csv 
+
+As a result, you will get two files:
+
+Tier0_Accs_DomainDNSName.csv
+Tier0_Grp_Membership_DomainDNSName.csv
+
+Upload these file to Teams. 
