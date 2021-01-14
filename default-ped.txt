@@ -16,6 +16,8 @@ sl C:\PED\SCRIPTS\
 
 DISABLE old EA/DA/Tier0 admin user accounts (to be replaced by new Tier 0 accounts later)
 
+sl C:\PED\SCRIPTS\
+
 .\DisableUsers.ps1 -csv C:\ped\CSVs\oodba_will_be_permanently_disabled.csv
 
 .\DisableUsers.ps1 -csv C:\ped\CSVs\oodba_will_be_renamed.csv
