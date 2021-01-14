@@ -52,6 +52,8 @@ sl C:\PED\SCRIPTS\
 
 Copy-Item C:\PED\SCRIPTS\new_accounts.csv C:\ped\CSVs\oodba_new_admins.csv
 
+.\MakeItTier0.ps1 -csv C:\ped\CSVs\oodba_new_admins.csv -users
+
 Configure Tier 0 admins as "account sensitive and can't be delegated"
 
 import-csv C:\ped\CSVs\oodba_new_admins.csv | %{set-aduser $_.samaccountname -AccountNotDelegated:$true}
