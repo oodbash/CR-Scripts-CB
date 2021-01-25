@@ -37,7 +37,7 @@
         [Parameter(Mandatory = $true, ParameterSetName="Type2")]
         [switch]
         $tier0,
-        [Parameter(Mandatory = $true, ParameterSetName="Type2")]
+        [Parameter(Mandatory = $false, ParameterSetName="Type2")]
         [switch]
         $move
     )
