@@ -36,7 +36,10 @@
         $full,
         [Parameter(Mandatory = $true, ParameterSetName="Type2")]
         [switch]
-        $tier0
+        $tier0,
+        [Parameter(Mandatory = $true, ParameterSetName="Type2")]
+        [switch]
+        $move
     )
     
     BEGIN{
@@ -64,10 +67,21 @@
     PROCESS {
     
         if ($full) {
+
+            Write-Host "`nThese users will be removed from all groups `n" 
+            foreach($Object in $Objects) { $object.distinguishedname }
+
+            $remove = Read-Host "`nWould you like to proceed?"
+
+            if ($remove -notin "YES","Y") {
+                Write-Host "`nNothing happened. ByeBye.."
+                break
+            } else {Write-Host "`nProceeding..`n"}
+
             foreach($Object in $Objects){
-                Get-ADUser -Identity $Object.dn -Properties MemberOf | ForEach-Object {
+                Get-ADUser -Identity $Object.distinguishedName -Properties MemberOf | ForEach-Object {
                     $_.MemberOf | Remove-ADGroupMember -Members $_.DistinguishedName -Confirm:$false
-                    Write-Host "Deprivileging" $Object.dn
+                    Write-Host "Deprivileging" $Object.distinguishedName
                 }
             }
         }
@@ -93,7 +107,23 @@
                     Get-ADNestedGroups -Members $out.Members
                 }
             }
+
+            if ($move) {
+                $ddn = (Get-ADDomain).DistinguishedName
+
+                while (![adsi]::Exists("LDAP://OU=Tier 1,OU=Admin,$ddn")) {
+                    if (![adsi]::Exists("LDAP://OU=Admin,$ddn")) {
+                        New-ADOrganizationalUnit -Name "Admin" -Path "$ddn"
+                    } else {New-ADOrganizationalUnit -Name "Tier 1" -Path "OU=Admin,$ddn"}
+                }
     
+                if (![adsi]::Exists("LDAP://OU=T1-Accounts,OU=Tier 1,OU=Admin,$ddn")) {
+                    New-ADOrganizationalUnit -Name "T1-Accounts" -Path "OU=Tier 1,OU=Admin,$ddn"
+                }
+    
+                $Tier1AccOU = "OU=T1-Accounts,OU=Tier 1,OU=Admin,$ddn"
+            }
+
             $AllTier0GroupsDN = @()
 
             foreach ($Group in $DefaultTier0Groups) {$AllTier0GroupsDN += (get-adgroup -identity $group).distinguishedname}
@@ -113,8 +143,6 @@
 
             Write-Host "`nThese groups are recognized as a Tier 0 Groups `n" 
             $allgroups
-            
-            $Objects = Import-CSV $CSV
 
             Write-Host "`nThese users will be removed from Tier 0 Groups `n" 
             foreach($Object in $Objects) { $object.distinguishedname }
@@ -132,6 +160,10 @@
     
                 ForEach ($T0OUG in $T0OUGs) {
                     Remove-ADGroupMember -identity $t0oug -Members $object.DistinguishedName -Confirm:$false
+                }
+
+                if ($move) {
+                    Move-ADObject  -Identity $object.DistinguishedName -TargetPath $Tier1AccOU
                 }
                 
                 Write-Host "Deprivileging" $Object.DistinguishedName

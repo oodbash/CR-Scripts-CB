@@ -148,7 +148,4 @@ PROCESS {
             Move-ADObject -Identity $computer -TargetPath $ComputersOU
         }
     }
-
-
-
 }
