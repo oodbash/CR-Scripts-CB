@@ -62,7 +62,7 @@
             foreach($Object in $Objects){
                 Get-ADUser -Identity $Object.dn -Properties MemberOf | ForEach-Object {
                     $_.MemberOf | Remove-ADGroupMember -Members $_.DistinguishedName -Confirm:$false
-                    Write-Host "Deprivileging " $Object.dn
+                    Write-Host "Deprivileging" $Object.dn
                 }
             }
         }
