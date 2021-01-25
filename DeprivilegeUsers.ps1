@@ -13,6 +13,8 @@
     Removes user from all security groups
     .PARAMETER TIER0 (MANDATORY, Switch, Parameter set, other option is TIER0)
     Removes user from Tier0 security groups
+    .PARAMETER TIER0GROUPS
+    You can define additional groups considered as tier 0
     .EXAMPLE
     .\deprivilegeusers.ps1 -CSV c:\temp\members.csv -full
 
