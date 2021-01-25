@@ -111,7 +111,20 @@
 
             $allgroups = $AllTier0GroupsDN | Sort-Object | Get-Unique
 
+            Write-Host "`nThese groups are recognized as a Tier 0 Groups `n" 
+            $allgroups
+            
             $Objects = Import-CSV $CSV
+
+            Write-Host "`nThese users will be removed from Tier 0 Groups `n" 
+            foreach($Object in $Objects) { $object.distinguishedname }
+
+            $remove = Read-Host "`nWould you like to proceed?"
+
+            if ($remove -notin "YES","Y") {
+                Write-Host "`nNothing happened. ByeBye.."
+                break
+            } else {Write-Host "`nProceeding..`n"}
     
             foreach($Object in $Objects) {
                 $OUGs = Get-ADUser -Identity $Object.DistinguishedName -Properties MemberOf
