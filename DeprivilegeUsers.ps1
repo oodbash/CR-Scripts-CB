@@ -72,7 +72,6 @@
         
         if ($tier0) {
     
-            #You can add here more groups considered Tier0
             $DefaultTier0Groups = `
             "Account Operators", `
             "Administrators", `
@@ -108,7 +107,6 @@
                 $AllTier0GroupsDN += $all.distinguishedname
             }
 
-   
             $allgroups = $AllTier0GroupsDN | Sort-Object | Get-Unique
 
             $Objects = Import-CSV $CSV
