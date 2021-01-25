@@ -100,7 +100,7 @@
 
             if ($Tier0Groups) {
                 $myTier0Groups = import-CSV -path $Tier0Groups
-                foreach ($Group in $myTier0Groups) {$AllTier0GroupsDN += (get-adgroup -identity $group.DN).distinguishedname}
+                foreach ($Group in $myTier0Groups) {$AllTier0GroupsDN += (get-adgroup -identity $group.DistinguishedName).distinguishedname}
             }
 
             foreach ($group in $AllTier0GroupsDN) {
@@ -114,14 +114,14 @@
             $Objects = Import-CSV $CSV
     
             foreach($Object in $Objects) {
-                $OUGs = Get-ADUser -Identity $Object.dn -Properties MemberOf
+                $OUGs = Get-ADUser -Identity $Object.DistinguishedName -Properties MemberOf
                 $t0ougs = $ougs.memberof | Where-Object {$_ -in $allgroups}
     
                 ForEach ($T0OUG in $T0OUGs) {
-                    Remove-ADGroupMember -identity $t0oug -Members $object.dn -Confirm:$false
+                    Remove-ADGroupMember -identity $t0oug -Members $object.DistinguishedName -Confirm:$false
                 }
                 
-                Write-Host "Deprivileging" $Object.dn
+                Write-Host "Deprivileging" $Object.DistinguishedName
             }
         }
     }
