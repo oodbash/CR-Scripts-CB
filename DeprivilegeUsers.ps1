@@ -26,6 +26,9 @@
         [Parameter(Mandatory = $true)]
         [string]
         $CSV,
+        [Parameter(Mandatory = $false)]
+        [string]
+        $tier0groups,
         [Parameter(Mandatory = $true, ParameterSetName="Type1")]
         [switch]
         $full,
@@ -70,7 +73,7 @@
         if ($tier0) {
     
             #You can add here more groups considered Tier0
-            $Groups = `
+            $DefaultTier0Groups = `
             "Account Operators", `
             "Administrators", `
             "Backup Operators", `
@@ -79,7 +82,7 @@
             "Print Operators", `
             "Schema Admins", `
             "Server Operators"
-    
+
             Function Get-ADNestedGroups {
                 param($Members)
     
@@ -90,17 +93,24 @@
                 }
             }
     
-            $RootTier0Groups = @()
-            foreach ($Group in $Groups) {$RootTier0Groups += (get-adgroup -identity $group).distinguishedname}
-    
-            foreach ($group in $Groups) {
+            $AllTier0GroupsDN = @()
+
+            foreach ($Group in $DefaultTier0Groups) {$AllTier0GroupsDN += (get-adgroup -identity $group).distinguishedname}
+
+            if ($Tier0Groups) {
+                $myTier0Groups = import-CSV -path $Tier0Groups
+                foreach ($Group in $myTier0Groups) {$AllTier0GroupsDN += (get-adgroup -identity $group.DN).distinguishedname}
+            }
+
+            foreach ($group in $AllTier0GroupsDN) {
                 $members = (Get-ADGroup -Identity $group -Properties Members).Members
                 $all = Get-ADNestedGroups $members
-                $allgroups += $all.distinguishedname
+                $AllTier0GroupsDN += $all.distinguishedname
             }
-    
-            $allgroups = $allgroups + $RootTier0Groups | Sort-Object | Get-Unique
-    
+
+   
+            $allgroups = $AllTier0GroupsDN | Sort-Object | Get-Unique
+
             $Objects = Import-CSV $CSV
     
             foreach($Object in $Objects) {
@@ -111,7 +121,7 @@
                     Remove-ADGroupMember -identity $t0oug -Members $object.dn -Confirm:$false
                 }
                 
-                Write-Host "Deprivileging" $Object.dn
+               Write-Host "Deprivileging" $Object.dn
             }
         }
     }
