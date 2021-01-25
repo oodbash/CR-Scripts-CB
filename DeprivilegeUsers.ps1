@@ -119,7 +119,7 @@
                     Remove-ADGroupMember -identity $t0oug -Members $object.dn -Confirm:$false
                 }
                 
-               Write-Host "Deprivileging" $Object.dn
+                Write-Host "Deprivileging" $Object.dn
             }
         }
     }
