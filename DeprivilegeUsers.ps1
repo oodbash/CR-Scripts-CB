@@ -6,15 +6,17 @@
     Version 2.0
 
     This script will take list of users from the CSV and remove them from either all or Tier0 groups depending on stated parameter (full or tier0)
-    .PARAMETER CSV (MANDATORY)
+    .PARAMETER CSV (MANDATORY, CSV file, DistinguishedName)
     Specify the full source to the CSV file i.e c:\temp\members.csv
     CSV need to have DN column defined
     .PARAMETER FULL (MANDATORY, Switch, Parameter set, other option is TIER0)
     Removes user from all security groups
     .PARAMETER TIER0 (MANDATORY, Switch, Parameter set, other option is TIER0)
     Removes user from Tier0 security groups
-    .PARAMETER TIER0GROUPS
+    .PARAMETER TIER0GROUPS (OPTIONAL, CSV file, DistinguishedName)
     You can define additional groups considered as tier 0
+    .PARAMETER MOVE (OPTIONAL, Switch, can be used only with TIER0 parameter)
+    Move deprivileged users to "OU=T1-Accounts,OU=Tier 1,OU=Admin,$ddn"
     .EXAMPLE
     .\deprivilegeusers.ps1 -CSV c:\temp\members.csv -full
 
