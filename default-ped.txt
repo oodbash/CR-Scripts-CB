@@ -24,7 +24,7 @@ sl C:\PED\SCRIPTS\
 
 .\DisableUsers.ps1 -csv C:\ped\CSVs\oodba_will_be_recreated.csv -rename
 
-DEPRIVILEGE Tier 0 accounts and move them to Tier 1
+DEPRIVILEGE selected Tier 0 accounts and move them to Tier 1
 
 .\deprivilegeusers.ps1 -CSV C:\ped\CSVs\oodba_will_be_removed_from_tier_0.csv -tier0 -move
 
