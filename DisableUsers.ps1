@@ -79,7 +79,7 @@ PROCESS {
     $TargetOU =  "OU=Disabled Accounts,$ddn"
 
     # Specify rename pattern.
-    $change = "old-"
+    $change = "old-" ## If you change this, use 3 letters and dash format
 
     if ($deprivilege) {
         foreach($account in $AccountList){
@@ -106,10 +106,10 @@ PROCESS {
     if ($rename){
         foreach ($account in $AccountList) {
             $User = Get-ADUser -identity $account.samaccountname
-            $NewSAM = $change + $User.SamAccountName
+            ## $NewSAM = $change + $User.SamAccountName
 
-            If ($User.SamAccountName.Length -gt '11') {
-                $NewSAM = $change + $User.SamAccountName.Substring(0, 11)
+            If ($User.SamAccountName.Length -gt '16') {
+                $NewSAM = $change + $User.SamAccountName.Substring(0,16)
             }
             Else {
                 $NewSAM = $change + $User.SamAccountName
@@ -117,7 +117,7 @@ PROCESS {
 
             $UPNSuffix = ($User.UserPrincipalName -split "@")[1]
             $NewUPN = $NewSam + '@' + $UPNSuffix
-            $NewName = $change + $User.Name
+            $NewName = $change.Substring(0,3) + " " + $User.Name
 
             Try {       
                 Set-ADUser $User.ObjectGUID -SamAccountName $NewSAM -UserPrincipalName $NewUPN -DisplayName $NewName `
