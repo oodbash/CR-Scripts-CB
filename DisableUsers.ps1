@@ -76,7 +76,7 @@ PROCESS {
     }
 
     # Specify target OU.This is where users will be moved.
-    $TargetOU =  "CR OU=Disabled Accounts,$ddn"
+    $TargetOU =  "OU=CR Disabled Accounts,$ddn"
 
     # Specify rename pattern.
     $change = "old-" ## If you change this, use 3 letters and dash format
@@ -117,7 +117,7 @@ PROCESS {
 
             $UPNSuffix = ($User.UserPrincipalName -split "@")[1]
             $NewUPN = $NewSam + '@' + $UPNSuffix
-            $NewName = $change.Substring(0,3) + " " + $User.Name
+            $NewName = $change.Substring(0,1).toupper() + $change.Substring(1,2).tolower() + " " + $User.Name
 
             Try {       
                 Set-ADUser $User.ObjectGUID -SamAccountName $NewSAM -UserPrincipalName $NewUPN -DisplayName $NewName `
