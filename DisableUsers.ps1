@@ -71,12 +71,12 @@ PROCESS {
 
     $ddn = (Get-ADDomain).DistinguishedName
 
-    if (![adsi]::Exists("LDAP://OU=Disabled Accounts,$ddn")) {
-        New-ADOrganizationalUnit -Name "Disabled Accounts" -Path $ddn
+    if (![adsi]::Exists("LDAP://OU=CR Disabled Accounts,$ddn")) {
+        New-ADOrganizationalUnit -Name "CR Disabled Accounts" -Path $ddn
     }
 
     # Specify target OU.This is where users will be moved.
-    $TargetOU =  "OU=Disabled Accounts,$ddn"
+    $TargetOU =  "CR OU=Disabled Accounts,$ddn"
 
     # Specify rename pattern.
     $change = "old-" ## If you change this, use 3 letters and dash format
