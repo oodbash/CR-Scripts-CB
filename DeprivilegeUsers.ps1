@@ -20,6 +20,7 @@
     .EXAMPLE
     .\deprivilegeusers.ps1 -CSV c:\temp\members.csv -full
 
+    .\deprivilegeusers.ps1 -CSV c:\temp\members.csv -tier0groups c:\temp\tier0groups.csv -tier0 -move
 
     .DISCLAIMER
     All scripts and other powershell references are offered AS IS with no warranty.

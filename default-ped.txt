@@ -24,6 +24,10 @@ sl C:\PED\SCRIPTS\
 
 .\DisableUsers.ps1 -csv C:\ped\CSVs\oodba_will_be_recreated.csv -rename
 
+DEPRIVILEGE Tier 0 accounts and move them to Tier 1
+
+.\deprivilegeusers.ps1 -CSV C:\ped\CSVs\oodba_will_be_removed_from_tier_0.csv -tier0 -move
+
 DISABLE all accounts which will have password reset later (coordinated with service account owners)
 
 import-csv C:\PED\CSVs\oodba_reset_pass.csv | %{set-aduser $_.name -Enabled:$false}
