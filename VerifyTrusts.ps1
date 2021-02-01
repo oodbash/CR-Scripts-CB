@@ -38,13 +38,8 @@ If($? -and $Domains -ne $Null)
       ForEach($Domain in $Domains)
       {
             if ($resetcommands) {
-                  Write-Output "$Domain`n" >> $forest"_trusts.txt"}
-            <#
-            $DomainDNSName = (Get-ADDomain -identity $Domain).dnsroot
-            $DomainName = (Get-ADDomain -identity $Domain).Name
-            $DomainDN = (Get-ADDomain -identity $Domain).DistinguishedName
-            $Forest = (Get-ADDomain -identity $Domain).Forest
-            #>
+                  Write-Output "$Domain`n" >> $forest"_trusts.txt"
+            }
 
             Write-output "Get list of AD Domain Trusts in $Domain `r"; 
             $ADDomainTrusts = Get-ADObject -Filter {ObjectClass -eq "trustedDomain"} -Server $Domain -Properties * -EA 0
