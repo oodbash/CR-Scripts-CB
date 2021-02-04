@@ -129,11 +129,15 @@
 
             $AllTier0GroupsDN = @()
 
-            foreach ($Group in $DefaultTier0Groups) {$AllTier0GroupsDN += (get-adgroup -identity $group).distinguishedname}
+            foreach ($Group in $DefaultTier0Groups) {
+                $AllTier0GroupsDN += (get-adgroup -identity $group).distinguishedname
+            }
 
             if ($Tier0Groups) {
                 $myTier0Groups = import-CSV -path $Tier0Groups
-                foreach ($Group in $myTier0Groups) {$AllTier0GroupsDN += (get-adgroup -identity $group.DistinguishedName).distinguishedname}
+                foreach ($Group in $myTier0Groups) {
+                    $AllTier0GroupsDN += (get-adgroup -identity $group.DistinguishedName).distinguishedname
+                }
             }
 
             foreach ($group in $AllTier0GroupsDN) {
