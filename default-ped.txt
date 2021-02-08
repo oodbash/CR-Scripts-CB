@@ -14,6 +14,10 @@ sl C:\PED\SCRIPTS\
 
 .\addobjectstomultiplegroups.ps1 -CSV C:\PED\CSVs\oodba_temp_admins_grp_membership.csv
 
+Enforce replication
+
+repadmin /syncall /AdeP
+
 DISABLE old EA/DA/Tier0 admin user accounts (to be replaced by new Tier 0 accounts later)
 
 sl C:\PED\SCRIPTS\
