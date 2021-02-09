@@ -19,7 +19,7 @@
     .EXAMPLE
     .\DisableUsers.ps1 -CSV c:\temp\users.csv -rename
 
-    .PARAMETER DEPRIVILEGE (MANDATORY)
+    .PARAMETER DEPRIVILEGE (OPTIONAL)
     Set this parameter if you want to deprivilege users. It will remove users from all groups.
     .EXAMPLE
     .\DisableUsers.ps1 -CSV c:\temp\users.csv -deprivilege
