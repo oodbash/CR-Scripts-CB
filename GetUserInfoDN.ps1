@@ -6,6 +6,7 @@
     Version 2.0
 
     This script will take list of users from the CSV return users parameters and group membership from AD.
+    Users from whole forest could be querid at once.
     .PARAMETER CSV (MANDATORY)
     Specify the full source to the CSV file i.e c:\temp\members.csv
     CSV need to have DN column defined
@@ -18,10 +19,12 @@
     #>
 
 [CmdletBinding()]
-
-param(
-    [Parameter(Mandatory=$True, Helpmessage="Specify full path to CSV (i.e c:\temp\members.csv")][string]$CSV 
+param (
+    [Parameter(Mandatory=$True, Helpmessage="Specify full path to CSV (i.e c:\temp\members.csv)")]
+    [string]
+    $CSV
 )
+
 BEGIN{
     #Checks if the user is in the administrator group. Warns and stops if the user is not.
     If (-NOT ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole(`
@@ -44,24 +47,24 @@ BEGIN{
     }
 }
 PROCESS {
-    
-    $users_array = @()
-    $groups_array = @()
 
-    $DomainDNSName = (Get-ADDomain).dnsroot
-    $DomainName = (Get-ADDomain).Name
-    $DomainDN = (Get-ADDomain).DistinguishedName
     $Forest = (Get-ADDomain).Forest
 
     foreach($Object in $Objects){
         try {
-            $user = Get-ADUser -Identity $Object.DN
-                    
+            $udn = $Object.DN
+            $ddn = [string]::join(",",(@(($udn).Split(",")) -match 'DC=*'))
+            $ddns = [string]::join(".",(@(($udn).Split(",")) -match 'DC=*').replace("DC=",""))
+            #$dnetbiosname = (get-addomain -identity $ddns).NetBIOSName
+
+            write-verbose "Getting domain name."
+            $user = Get-ADUser -Identity $Object.DN -server $ddns
+            
             $item = New-Object PSObject
             $item | Add-Member -type NoteProperty -Name 'ForestName' -Value $Forest
-            $item | Add-Member -type NoteProperty -Name 'DomainName' -Value $DomainName
-            $item | Add-Member -type NoteProperty -Name 'DomainDNSName' -Value $DomainDNSName
-            $item | Add-Member -type NoteProperty -Name 'DomainDN' -Value $DomainDN
+            #$item | Add-Member -type NoteProperty -Name 'DomainName' -Value $dnetbiosname
+            $item | Add-Member -type NoteProperty -Name 'DomainDNSName' -Value $ddns
+            $item | Add-Member -type NoteProperty -Name 'DomainDN' -Value $ddn
             $item | Add-Member -type NoteProperty -Name 'Name' -Value $user.Name
             $item | Add-Member -type NoteProperty -Name 'SamAccountName' -Value $user.SamAccountName
             $item | Add-Member -type NoteProperty -Name 'UserPrincipalName' -Value $user.UserPrincipalName
@@ -70,17 +73,17 @@ PROCESS {
             $item | Add-Member -type NoteProperty -Name 'PEDAction' -Value ""
             $item | Add-Member -type NoteProperty -Name 'NewSamAccountName' -Value ""
                                     
-            $users_array += $item
+            $item | Export-CSV "Tier0_Accs_$ddns.csv" -NoTypeInformation -Encoding UTF8 -append
 
             $grps = Get-ADPrincipalGroupMembership -identity $user.samaccountName
             foreach($grp in $grps){
                 $item = New-Object PSObject
-                $item | Add-Member -type NoteProperty -Name 'DomainDNSName' -Value $DomainDNSName
+                $item | Add-Member -type NoteProperty -Name 'DomainDNSName' -Value $ddns
                 $item | Add-Member -type NoteProperty -Name 'User' -Value $user.samaccountName
                 $item | Add-Member -type NoteProperty -Name 'Group' -Value $grp.samaccountName
                 $item | Add-Member -type NoteProperty -Name 'GroupDN' -Value $grp.distinguishedName
 
-                $groups_array += $item
+                $item | Export-CSV "Tier0_Grp_Membership_$ddns.csv" -NoTypeInformation -Encoding UTF8 -append
             }
 
 		}
@@ -89,6 +92,4 @@ PROCESS {
         }
     }
 
-    $users_array | Export-CSV "Tier0_Accs_$DomainDNSName.csv" -NoTypeInformation -Encoding UTF8
-    $groups_array | Export-CSV "Tier0_Grp_Membership_$DomainDNSName.csv" -NoTypeInformation -Encoding UTF8
 }
