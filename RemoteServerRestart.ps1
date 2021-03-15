@@ -3,7 +3,7 @@
     Remotely restarts servers in organized way. 
 
     Author: Vladimir Mutić
-    Version 0.8
+    Version 0.9
 
     .DESCRIPTION
     Servers should be organized in Restart Groups and script will restart group by group with possibilty to verify status befor proceeding with next group.
@@ -80,15 +80,30 @@ $serverGrp | ForEach-Object {
     while ($c -eq "r") {
         foreach ($Server in (($PSItem.Group).CI))
         {
+            $osInfo = Get-CimInstance -ComputerName $server -ClassName Win32_OperatingSystem
+            if ($osInfo.ProductType -eq "2") {$isDC = $True} else {$isDC = $False}
             # Test-Connection $Server
-	        if (Test-Connection $Server -quiet -Count 2 -Delay 1) {
-                $lastbootuptime = (Get-CimInstance -ComputerName $Server -ClassName win32_operatingsystem -ErrorAction ignore | Select-Object lastbootuptime).lastbootuptime
-                "Computer $Server verified to be responding to ping at $(Get-Date), and last bootup time is $lastbootuptime" | Tee-Object -FilePath $outputfile -Append
-                # "Computer $Server verified to be responding to ping at $(Get-Date), and last bootup tmime is $lastbootuptime" | Add-Content -Path $outputfile 
+            if ($isDC -eq $True) {
+                if (get-item \\$server\sysvol -ea SilentlyContinue) {
+                    $lastbootuptime = (Get-CimInstance -ComputerName $Server -ClassName win32_operatingsystem -ErrorAction ignore | Select-Object lastbootuptime).lastbootuptime
+                    "Computer $Server is a DC and ADDS is up and running (SYSVOL IS reachable) at $(Get-Date), and last bootup time is $lastbootuptime" | Tee-Object -FilePath $outputfile -Append
+                    # "Computer $Server verified to be responding to ping at $(Get-Date), and last bootup tmime is $lastbootuptime" | Add-Content -Path $outputfile 
+                }
+                else {
+                    write-host "Computer $Server is a DC but ADDS is unresponsive (SYSVOL is NOT reachable) at $(Get-Date)"
+                    "ADDS on $Server is unresponsive at $(Get-Date)" | Add-Content -Path $outputfile 
+                }
             }
-	        else {
-                write-host "Computer $Server is unresponsive to ping at $(Get-Date)"
-                "Computer $Server is unresponsive to ping at $(Get-Date)" | Add-Content -Path $outputfile 
+            else {
+                if (Test-Connection $Server -quiet -Count 2 -Delay 1) {
+                    $lastbootuptime = (Get-CimInstance -ComputerName $Server -ClassName win32_operatingsystem -ErrorAction ignore | Select-Object lastbootuptime).lastbootuptime
+                    "Computer $Server is verified to be responding to ping at $(Get-Date), and last bootup time is $lastbootuptime" | Tee-Object -FilePath $outputfile -Append
+                    # "Computer $Server verified to be responding to ping at $(Get-Date), and last bootup tmime is $lastbootuptime" | Add-Content -Path $outputfile 
+                }
+                else {
+                    write-host "Computer $Server is unresponsive to ping at $(Get-Date)"
+                    "Computer $Server is unresponsive to ping at $(Get-Date)" | Add-Content -Path $outputfile 
+                }
             }
         }
 
