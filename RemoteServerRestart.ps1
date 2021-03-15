@@ -80,7 +80,11 @@ $serverGrp | ForEach-Object {
     while ($c -eq "r") {
         foreach ($Server in (($PSItem.Group).CI))
         {
-            $osInfo = Get-CimInstance -ComputerName $server -ClassName Win32_OperatingSystem
+            Write-Host "Verifying server $Server"
+            $isDC = $False
+            $osInfo = $null 
+            try {$osInfo = Get-CimInstance -ComputerName $server -ClassName Win32_OperatingSystem -ea Stop}
+            catch {Write-Host "I wasn't able to verify type of Server (if it's a DC)!"}
             if ($osInfo.ProductType -eq "2") {$isDC = $True} else {$isDC = $False}
             # Test-Connection $Server
             if ($isDC -eq $True) {
