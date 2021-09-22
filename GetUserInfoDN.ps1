@@ -55,14 +55,14 @@ PROCESS {
             $udn = $Object.DN
             $ddn = [string]::join(",",(@(($udn).Split(",")) -match 'DC=*'))
             $ddns = [string]::join(".",(@(($udn).Split(",")) -match 'DC=*').replace("DC=",""))
-            #$dnetbiosname = (get-addomain -identity $ddns).NetBIOSName
+            $dnetbiosname = (get-addomain -identity $ddns).NetBIOSName
 
             write-verbose "Getting domain name."
             $user = Get-ADUser -Identity $Object.DN -server $ddns
             
             $item = New-Object PSObject
             $item | Add-Member -type NoteProperty -Name 'ForestName' -Value $Forest
-            #$item | Add-Member -type NoteProperty -Name 'DomainName' -Value $dnetbiosname
+            $item | Add-Member -type NoteProperty -Name 'DomainName' -Value $dnetbiosname
             $item | Add-Member -type NoteProperty -Name 'DomainDNSName' -Value $ddns
             $item | Add-Member -type NoteProperty -Name 'DomainDN' -Value $ddn
             $item | Add-Member -type NoteProperty -Name 'Name' -Value $user.Name
