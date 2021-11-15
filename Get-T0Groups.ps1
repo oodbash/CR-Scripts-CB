@@ -75,9 +75,9 @@ $allusers
 
 Write-Host "`nTier 0 Groups and Users - membership" -ForegroundColor Green
 foreach ($group in $allgroups) {
-    Write-Host "`nGroup DN -" $group
+    Write-Host "`n[ P ]" $group
     $members = Get-ADGroupmember -Identity $group
     foreach ($member in $members)  {
-        Write-Host "["($member.objectclass).substring(0,1).toupper()"]" $member.distinguishedname
+        Write-Host "`t["($member.objectclass).substring(0,1).toupper()"]" $member.distinguishedname
     }
 }
