@@ -11,7 +11,7 @@
     CSV need to have DN column defined
     .PARAMETER FULL (MANDATORY, Switch, Parameter set, other option is TIER0)
     Removes user from all security groups
-    .PARAMETER TIER0 (MANDATORY, Switch, Parameter set, other option is TIER0)
+    .PARAMETER TIER0 (MANDATORY, Switch, Parameter set, other option is FULL)
     Removes user from Tier0 security groups
     .PARAMETER TIER0GROUPS (OPTIONAL, CSV file, DistinguishedName)
     You can define additional groups considered as tier 0
