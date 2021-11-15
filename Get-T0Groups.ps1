@@ -4,6 +4,8 @@ param (
     $tier0groups
 )
 
+Import-Module ActiveDirectory
+
 $DefaultTier0Groups = `
     "Account Operators", `
     "Administrators", `
@@ -14,7 +16,17 @@ $DefaultTier0Groups = `
     "Schema Admins", `
     "Server Operators"
 
-Function Get-ADNestedGroups {
+function Get-ADNestedGroupMembers {
+    [cmdletbinding()]
+    param (
+        [String]
+        $Group
+    )
+    $Members = Get-ADGroupMember -Identity $Group -Recursive
+    $members
+    }
+
+    Function Get-ADNestedGroups {
     param($Members)
 
     foreach ($member in $Members) {
@@ -24,14 +36,19 @@ Function Get-ADNestedGroups {
     }
 }
 
+$AllTier0GroupsDN = @()
+$AllTier0UsersDN = @()
+
 foreach ($Group in $DefaultTier0Groups) {
-    $AllTier0GroupsDN += (get-adgroup -identity $group).distinguishedname
+    $grpDN = (get-adgroup -identity $group).distinguishedname
+    $AllTier0GroupsDN += $grpdn
 }
 
 if ($Tier0Groups) {
     $myTier0Groups = import-CSV -path $Tier0Groups
     foreach ($Group in $myTier0Groups) {
-        $AllTier0GroupsDN += (get-adgroup -identity $group.DistinguishedName).distinguishedname
+        $grpDN = get-adgroup -identity $group.DN
+        $AllTier0GroupsDN += $grpdn.distinguishedname
     }
 }
 
@@ -43,5 +60,24 @@ foreach ($group in $AllTier0GroupsDN) {
 
 $allgroups = $AllTier0GroupsDN | Sort-Object | Get-Unique
 
-Write-Host "`nThese groups are recognized as a Tier 0 Groups `n" 
+foreach ($group in $allgroups) {
+    $grpDN = (get-adgroup -identity $group).distinguishedname
+    $AllTier0UsersDN += (Get-ADGroupMember -Identity $grpdn -recursive).distinguishedname
+}
+
+$allusers = $AllTier0UsersDN | Sort-Object | Get-Unique
+
+Write-Host "`nThese groups are recognized as a Tier 0 Groups `n"  -ForegroundColor Green
 $allgroups
+
+Write-Host "`nThese users are recognized as a Tier 0 Users `n"  -ForegroundColor Green
+$allusers
+
+Write-Host "`nTier 0 Groups and Users - membership" -ForegroundColor Green
+foreach ($group in $allgroups) {
+    Write-Host "`nGroup DN -" $group
+    $members = Get-ADGroupmember -Identity $group
+    foreach ($member in $members)  {
+        Write-Host "["($member.objectclass).substring(0,1).toupper()"]" $member.distinguishedname
+    }
+}
