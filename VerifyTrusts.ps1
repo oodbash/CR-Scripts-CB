@@ -148,7 +148,7 @@ If($? -and $Domains -ne $Null)
                                                 Write-Output "`t`tRun following command in this domain ($domain)`n" >> $forest"_trusts.txt"
                                                 Write-Output "`t`t`tnetdom trust $Domain /domain:$TrustName /resetOneSide /passwordT:$extpass /userO:your_domain_admin /passwordO:*`n" >> $forest"_trusts.txt"
                                                 Write-Output "`t`tRun following command on the other side of the trust ($trustname)`n" >> $forest"_trusts.txt"
-                                                Write-Output "`t`tnetdom trust $TrustName /domain:$Domain /resetOneSide /passwordT:$extpass /userO:your_domain_admin /passwordO:*`n" >> $forest"_trusts.txt"
+                                                Write-Output "`t`t`tnetdom trust $TrustName /domain:$Domain /resetOneSide /passwordT:$extpass /userO:your_domain_admin /passwordO:*`n" >> $forest"_trusts.txt"
                                           }
                                     }
                                     
