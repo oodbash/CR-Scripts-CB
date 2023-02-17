@@ -121,7 +121,7 @@ PROCESS {
 
             Try {       
                 Set-ADUser $User.ObjectGUID -SamAccountName $NewSAM -UserPrincipalName $NewUPN -DisplayName $NewName `
-                    -Replace @{info = "Account disabled and moved on as part of the Active Directory cleanup activity" } `
+                    -Replace @{info = "Account disabled and moved as part of the Active Directory cleanup activity" } `
                     -Clear AdminCount
             }
             Catch {
